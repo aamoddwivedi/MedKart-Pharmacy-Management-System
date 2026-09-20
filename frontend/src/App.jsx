@@ -4,7 +4,8 @@ import { Toaster } from "react-hot-toast";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Medicines from "./pages/Medicines"; // landing page — kept eager to avoid a first-load flash
+import Home from "./pages/Home";
+import Medicines from "./pages/Medicines";
 
 // Everything else loads on demand, splitting the bundle into smaller chunks per route
 const MedicineDetail = lazy(() => import("./pages/MedicineDetail"));
@@ -29,7 +30,8 @@ function App() {
       <main className="flex-1">
         <Suspense fallback={<RouteFallback />}>
           <Routes>
-            <Route path="/" element={<Medicines />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/medicines" element={<Medicines />} />
             <Route path="/medicine/:id" element={<MedicineDetail />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
