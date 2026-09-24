@@ -1,501 +1,303 @@
+<div align="center">
+
 # 💊 MedKart — Online Pharmacy Management System
 
-A full-stack **Online Pharmacy Management System** built using the **MERN stack** — MongoDB, Express.js, React.js, and Node.js.
+**A production-style MERN e-pharmacy: browse medicines, upload prescriptions, check out, and manage the whole store from an analytics-driven admin panel.**
 
-MedKart provides a complete digital pharmacy experience where customers can browse medicines, manage their cart, place orders, and track order status. Administrators can manage medicine inventory and monitor customer orders through a dedicated admin dashboard.
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org)
+[![Express](https://img.shields.io/badge/Express-4-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://mongodb.com)
+[![JWT](https://img.shields.io/badge/Auth-JWT-FF6B00?style=for-the-badge&logo=jsonwebtokens&logoColor=white)](https://jwt.io)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
----
+[Live Demo](https://medkart-online-pharmacy-management.vercel.app/) · [Report Bug](../../issues) · [Request Feature](../../issues)
 
-## 🚀 Key Features
-
-### 👤 Authentication & Authorization
-- JWT-based user registration and login
-- Secure password hashing using **bcryptjs**
-- Role-based access control
-- Separate **Customer** and **Admin** permissions
-- Protected routes for authenticated users
-
-### 💊 Medicine Management
-- Browse medicine catalog
-- Search medicines by name
-- Filter medicines by category
-- Pagination for better performance
-- Prescription-required medicine flag
-- Admin CRUD operations:
-  - Add medicines
-  - Update medicines
-  - Delete medicines
-  - Manage inventory
-
-### 🛒 Cart & Checkout
-- Add medicines to cart
-- Increase/decrease medicine quantity
-- Remove items from cart
-- Automatic cart total calculation
-- Place orders
-- Support for:
-  - Cash on Delivery (COD)
-  - Online payment option
-
-### 📦 Order Management
-#### Customer
-- View placed orders
-- Track order status
-- View order details
-
-#### Admin
-- View customer orders
-- Manage order status
-- Monitor order information
-
-### 🛠️ Admin Dashboard
-- Manage medicine inventory
-- Add, update, and delete medicines
-- View customer orders
-- Update order status
-- Centralized administrative interface
+</div>
 
 ---
 
-## 🧑‍💻 Tech Stack
+## 📖 Overview
+
+MedKart is a full-stack online pharmacy platform built on the MERN stack. It models the real workflow of a pharmacy business end to end — a customer-facing storefront with search, reviews and prescription-aware checkout, and an admin console for inventory, order fulfilment and revenue analytics.
+
+The project was built to be **demo-ready**: seed the database with one command, log in as admin, and every screen has real data behind it.
+
+**Why it's more than a CRUD app**
+
+- Stock is decremented **transactionally at checkout**, with server-side validation that rejects orders exceeding available inventory
+- Prescription-only medicines are flagged at the catalog level and propagate through cart → order → admin verification
+- Reviews are enforced **one-per-user-per-medicine** with a unique compound index, and roll up into a cached `avgRating` on each medicine
+- Every protected route is guarded twice: JWT middleware on the API and route guards on the client
+- The admin dashboard computes revenue trends and top sellers from live order data
+
+---
+
+## ✨ Features
+
+### 🛒 Customer
+
+| Feature | Details |
+|---|---|
+| **Medicine catalog** | Server-side search across name and brand, category filters, paginated results |
+| **Product detail pages** | Brand, manufacturer, expiry, MRP vs. selling price, live stock badge |
+| **Ratings & reviews** | 5-star reviews with comments; one review per user per medicine |
+| **Cart** | Persistent cart via React Context, quantity adjustment, live order total |
+| **Prescription upload** | Attach a prescription image at checkout when the cart contains Rx medicines |
+| **Checkout** | COD and Online payment modes, shipping address and phone capture |
+| **Order tracking** | Visual order stepper — Pending → Confirmed → Shipped → Delivered |
+| **Dark mode** | System-preference aware, persisted to `localStorage` |
+
+### 🛡️ Admin
+
+| Feature | Details |
+|---|---|
+| **Inventory CRUD** | Create, edit and delete medicines across 8 categories |
+| **Order management** | View every order with customer details; update fulfilment status |
+| **Revenue analytics** | Recharts area chart of the revenue trend + bar chart of top-selling medicines |
+| **Live KPIs** | Total revenue, pending orders, catalog size at a glance |
+| **Prescription review** | Inspect uploaded prescriptions attached to Rx orders |
+
+### ⚙️ Engineering
+
+- **JWT authentication** with bcrypt-hashed passwords (10-round salt) and role-based authorization middleware
+- **Route-level code splitting** — every page except the landing route is lazy-loaded, keeping the initial bundle small
+- **Text indexes** on medicine name, brand and category for fast lookups
+- **Centralised Axios instance** with an auth interceptor, plus a global Express error handler and 404 fallback
+- **GSAP + Tailwind** landing page with animated stats, testimonials, FAQ and a how-it-works section
+
+---
+
+## 🧱 Tech Stack
 
 | Layer | Technologies |
 |---|---|
-| **Frontend** | React 18, Vite, React Router, Tailwind CSS, Axios, react-hot-toast |
-| **Backend** | Node.js, Express.js, JWT, bcryptjs |
-| **Database** | MongoDB, Mongoose |
-| **Authentication** | JSON Web Tokens (JWT) |
-| **API Communication** | REST API, Axios |
-| **Development Tools** | Git, GitHub, VS Code |
+| **Frontend** | React 18, Vite 5, React Router 6, Tailwind CSS 3, Axios, Recharts, GSAP, lucide-react, react-hot-toast |
+| **Backend** | Node.js, Express 4, Mongoose 8, JSON Web Tokens, bcryptjs, Morgan, CORS |
+| **Database** | MongoDB (local or Atlas) |
+| **Tooling** | Nodemon, PostCSS, Autoprefixer, dotenv |
 
 ---
 
-## 🏗️ Project Architecture
+## 🏗️ Architecture
 
-```text
-                    ┌──────────────────────┐
-                    │      React Frontend  │
-                    │   React + Vite       │
-                    │   Tailwind CSS       │
-                    └──────────┬───────────┘
-                               │
-                               │ REST API
-                               ▼
-                    ┌──────────────────────┐
-                    │    Express / Node.js │
-                    │                      │
-                    │ Controllers           │
-                    │ Routes                │
-                    │ Authentication        │
-                    │ Middleware            │
-                    └──────────┬───────────┘
-                               │
-                               │ Mongoose
-                               ▼
-                    ┌──────────────────────┐
-                    │       MongoDB        │
-                    │                      │
-                    │ Users                │
-                    │ Medicines             │
-                    │ Orders                │
-                    └──────────────────────┘
+```
+React (Vite) ──HTTP/JSON──►  Express REST API  ──Mongoose──►  MongoDB
+     │                              │
+ AuthContext                  JWT middleware
+ CartContext                  role guard (adminOnly)
+ ThemeContext                 global error handler
 ```
 
----
-
-## 📁 Folder Structure
-
-```text
+```
 MedKart-Pharmacy-Management-System/
-│
 ├── backend/
-│   ├── config/
-│   │   └── db.js
-│   │
-│   ├── models/
-│   │   ├── User.js
-│   │   ├── Medicine.js
-│   │   └── Order.js
-│   │
-│   ├── controllers/
-│   │   ├── authController.js
-│   │   ├── medicineController.js
-│   │   └── orderController.js
-│   │
-│   ├── routes/
-│   │   ├── authRoutes.js
-│   │   ├── medicineRoutes.js
-│   │   └── orderRoutes.js
-│   │
-│   ├── middleware/
-│   │   └── auth.js
-│   │
-│   ├── seed.js
-│   ├── server.js
-│   ├── .env.example
-│   └── package.json
-│
-├── frontend/
-│   ├── src/
-│   │   ├── api/
-│   │   │   └── axios.js
-│   │   │
-│   │   ├── context/
-│   │   │   ├── AuthContext.jsx
-│   │   │   └── CartContext.jsx
-│   │   │
-│   │   ├── components/
-│   │   │   ├── Navbar.jsx
-│   │   │   ├── MedicineCard.jsx
-│   │   │   └── ProtectedRoute.jsx
-│   │   │
-│   │   └── pages/
-│   │       ├── Medicines.jsx
-│   │       ├── Login.jsx
-│   │       ├── Register.jsx
-│   │       ├── Cart.jsx
-│   │       ├── Orders.jsx
-│   │       └── AdminDashboard.jsx
-│   │
-│   ├── .env.example
-│   └── package.json
-│
-└── README.md
+│   ├── config/db.js                 # MongoDB connection
+│   ├── models/                      # User, Medicine, Order, Review
+│   ├── controllers/                 # auth, medicine, order, review
+│   ├── routes/                      # /api/auth, /api/medicines, /api/orders
+│   ├── middleware/auth.js           # protect + adminOnly
+│   ├── seed.js                      # admin user + 20 sample medicines
+│   └── server.js
+└── frontend/
+    └── src/
+        ├── api/axios.js             # base URL + token interceptor
+        ├── context/                 # Auth, Cart, Theme
+        ├── components/              # Navbar, MedicineCard, OrderStepper, FAQ, …
+        └── pages/                   # Medicines, MedicineDetail, Cart, Orders,
+                                     # OrderConfirmation, Login, Register, AdminDashboard
 ```
 
 ---
 
-# ⚙️ Installation & Setup
+## 🗃️ Data Model
 
-## Prerequisites
-
-Make sure you have the following installed:
-
-- **Node.js v18+**
-- **npm**
-- **MongoDB** running locally  
-  **OR**
-- A **MongoDB Atlas** connection string
-- Git
+| Collection | Key fields |
+|---|---|
+| **User** | `name`, `email` (unique), `password` (hashed), `phone`, `address`, `role` (`customer` \| `admin`) |
+| **Medicine** | `name`, `brand`, `category` (enum, 8 values), `price`, `mrp`, `stock`, `requiresPrescription`, `manufacturer`, `expiryDate`, `avgRating`, `numReviews` |
+| **Order** | `user`, `items[]` (medicine, name, qty, price), `totalAmount`, `shippingAddress`, `phone`, `status` (enum), `paymentMethod`, `paymentStatus`, `prescriptionImage`, `requiresPrescription` |
+| **Review** | `medicine`, `user`, `userName`, `rating` (1–5), `comment` — unique index on `{ medicine, user }` |
 
 ---
 
-## 1️⃣ Clone the Repository
+## 🔌 API Reference
 
-```bash
-git clone https://github.com/aamoddwivedi/MedKart-Pharmacy-Management-System.git
+Base URL: `http://localhost:5000/api`
+
+### Auth
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `POST` | `/auth/register` | Public | Create a customer account, returns JWT |
+| `POST` | `/auth/login` | Public | Authenticate, returns JWT |
+| `GET` | `/auth/profile` | Private | Current user profile |
+
+### Medicines
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `GET` | `/medicines?search=&category=&page=&limit=` | Public | Paginated, searchable catalog |
+| `GET` | `/medicines/:id` | Public | Single medicine |
+| `GET` | `/medicines/:id/reviews` | Public | Reviews for a medicine |
+| `POST` | `/medicines/:id/reviews` | Private | Add a review (one per user) |
+| `POST` | `/medicines` | Admin | Create medicine |
+| `PUT` | `/medicines/:id` | Admin | Update medicine |
+| `DELETE` | `/medicines/:id` | Admin | Delete medicine |
+
+### Orders
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `POST` | `/orders` | Private | Place an order (validates stock, decrements inventory) |
+| `GET` | `/orders/myorders` | Private | Current user's order history |
+| `GET` | `/orders` | Admin | All orders with customer details |
+| `PUT` | `/orders/:id/status` | Admin | Update fulfilment status |
+
+<details>
+<summary><b>Sample request — place an order</b></summary>
+
+```http
+POST /api/orders
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "items": [{ "medicineId": "66b1f...", "quantity": 2 }],
+  "shippingAddress": "221B Baker Street, Prayagraj",
+  "phone": "9876543210",
+  "paymentMethod": "COD",
+  "prescriptionImage": "data:image/png;base64,..."
+}
 ```
+</details>
 
-Navigate into the project:
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js **18+**
+- MongoDB running locally, or a MongoDB Atlas connection string
+
+### 1 · Clone
 
 ```bash
+git clone https://github.com/abhishekyadav77/MedKart-Pharmacy-Management-System.git
 cd MedKart-Pharmacy-Management-System
 ```
 
----
-
-# 🔧 Backend Setup
-
-Navigate to the backend:
+### 2 · Backend
 
 ```bash
 cd backend
-```
-
-Install dependencies:
-
-```bash
 npm install
-```
-
-Create your environment file:
-
-```bash
 cp .env.example .env
+npm run dev          # http://localhost:5000
 ```
 
-> On Windows PowerShell, you can alternatively create `.env` manually from `.env.example`.
-
-Configure your `.env` file:
+`.env`
 
 ```env
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_secret_key
 PORT=5000
+MONGO_URI=mongodb://127.0.0.1:27017/pharmacy_db
+JWT_SECRET=replace_this_with_a_long_random_secret
+JWT_EXPIRE=7d
+CLIENT_URL=http://localhost:5173
 ```
 
-Start the backend development server:
-
-```bash
-npm run dev
-```
-
-The API will run at:
-
-```text
-http://localhost:5000
-```
-
----
-
-# 🌱 Seed Sample Data
-
-To populate the database with sample medicines and create the default admin account:
+### 3 · Seed demo data
 
 ```bash
 node seed.js
 ```
 
-This creates:
+Creates an admin account plus a catalog of sample medicines across all categories.
 
-- Admin account
-- 8 sample medicines
-
-### Admin Credentials
-
-```text
-Email: admin@pharmacy.com
-Password: admin123
+```
+Email: PRIVATE
+Password: PRIVATE
 ```
 
-> ⚠️ Change the default admin credentials before using the application in a production environment.
 
----
 
-# 🎨 Frontend Setup
+### 4 · Frontend
 
-Open another terminal and navigate to the frontend:
+In a second terminal:
 
 ```bash
 cd frontend
-```
-
-Install dependencies:
-
-```bash
 npm install
+cp .env.example .env     # VITE_API_URL=http://localhost:5000/api
+npm run dev              # http://localhost:5173
 ```
 
-Create the environment file:
+### 5 · Try it out
 
-```bash
-cp .env.example .env
-```
-
-Start the React development server:
-
-```bash
-npm run dev
-```
-
-The application will be available at:
-
-```text
-http://localhost:5173
-```
+1. Browse the catalog, open a medicine, leave a review
+2. Add items to the cart and check out — attach a prescription if the cart has Rx items
+3. Watch stock drop and track the order on the stepper
+4. Log in as admin → **Admin Panel** → edit inventory, advance order status, read the analytics
 
 ---
 
-# 🖥️ Application Workflow
-
-### 👤 Customer Workflow
-
-```text
-Register / Login
-       ↓
-Browse Medicines
-       ↓
-Search / Filter
-       ↓
-Add to Cart
-       ↓
-Review Cart
-       ↓
-Checkout
-       ↓
-Place Order
-       ↓
-Track Order
-```
-
-### 👨‍💼 Admin Workflow
-
-```text
-Admin Login
-     ↓
-Admin Dashboard
-     ↓
-Manage Medicines
-     ├── Add
-     ├── Update
-     └── Delete
-     ↓
-Manage Orders
-     ↓
-Update Order Status
-```
-
----
-
-# 🔐 Security
-
-MedKart implements several security-focused mechanisms:
-
-- JWT-based authentication
-- Password hashing with bcryptjs
-- Protected API routes
-- Role-based authorization
-- Environment variables for sensitive configuration
-- Separation of frontend and backend responsibilities
-
----
-
-# 🔌 API Modules
-
-The backend is organized around RESTful API modules:
-
-### Authentication
-
-```text
-/auth
-```
-
-Handles:
-
-- User registration
-- User login
-- Authentication
-
-### Medicines
-
-```text
-/medicines
-```
-
-Handles:
-
-- Medicine listing
-- Searching
-- Filtering
-- Medicine creation
-- Medicine updates
-- Medicine deletion
-
-### Orders
-
-```text
-/orders
-```
-
-Handles:
-
-- Creating orders
-- Fetching customer orders
-- Managing orders
-- Updating order status
-
----
-
-# 📸 Screenshots
-
-> Add screenshots of your application here to make the GitHub repository more attractive to recruiters.
-
-Suggested screenshots:
-
-- 🏠 Home / Medicine Catalog
-- 🔐 Login & Registration
-- 💊 Medicine Search
-- 🛒 Shopping Cart
-- 📦 Order Page
-- 👨‍💼 Admin Dashboard
-- 💊 Medicine Management
-
-Example:
-
-```markdown
 ## 📸 Screenshots
 
-### Medicine Catalog
-![Medicine Catalog](screenshots/medicines.png)
 
-### Shopping Cart
-![Shopping Cart](screenshots/cart.png)
+| Storefront | Medicine Detail |
+|---|---|
+| ![Storefront](screenshots/home.png) | ![Detail](screenshots/detail.png) |
 
-### Admin Dashboard
-![Admin Dashboard](screenshots/admin-dashboard.png)
-```
-
----
-
-# 💡 What I Learned
-
-Through this project, I worked with:
-
-- MERN stack application architecture
-- REST API development
-- MongoDB database design
-- Mongoose ODM
-- JWT authentication
-- Role-based authorization
-- React Context API
-- Protected routes
-- CRUD operations
-- API integration using Axios
-- State management
-- Git & GitHub workflow
+| Cart & Checkout | Admin Dashboard |
+|---|---|
+| ![Cart](screenshots/cart.png) | ![Admin](screenshots/admin.png) |
 
 ---
 
-# 🚀 Future Enhancements
+## 🗺️ Roadmap
 
-The following features can be added to further improve MedKart:
-
-- 💳 Razorpay / Stripe payment integration
-- 📄 Prescription image upload using Cloudinary + Multer
-- 📧 Email notifications for order updates
-- 🔔 Low-stock inventory alerts
-- ⭐ Medicine reviews and ratings
-- 📊 Advanced admin analytics dashboard
-- 🔎 Advanced medicine search
-- 📱 Improved mobile responsiveness
-- 📦 Inventory stock tracking
-- 🧾 Downloadable order invoices
-- 🔐 Refresh-token based authentication
+- [ ] Razorpay / Stripe payment gateway integration
+- [ ] Cloudinary-backed prescription storage (replacing base64)
+- [ ] Email and SMS notifications on order status change
+- [ ] Pharmacist role with a dedicated prescription-verification queue
+- [ ] Low-stock and near-expiry alerts on the admin dashboard
+- [ ] Delivery agent role with live order tracking
+- [ ] Jest + Supertest API test suite and CI on GitHub Actions
+- [ ] Docker Compose setup for one-command local spin-up
 
 ---
 
-# 🎯 Project Highlights
+## 🤝 Contributing
 
-- Full-stack MERN application
-- Customer and Admin role separation
-- JWT authentication and authorization
-- Complete medicine CRUD functionality
-- Cart and order management
-- MongoDB-backed data persistence
-- RESTful backend architecture
-- Responsive React frontend
-- Scalable project structure
+Contributions are welcome.
 
----
-
-# 👨‍💻 Author
-
-**Aamod Dwivedi**
-
-B.Tech — Computer Science & Engineering
-
-### GitHub
-
-[@aamoddwivedi](https://github.com/aamoddwivedi)
-
----
-
-# ⭐ Support
-
-If you find this project useful, consider giving it a ⭐ on GitHub.
+1. Fork the repo
+2. `git checkout -b feature/your-feature`
+3. `git commit -m "feat: add your feature"`
+4. `git push origin feature/your-feature`
+5. Open a Pull Request
 
 ---
 
 ## 📄 License
 
-This project is developed for **educational and portfolio purposes**.
+Distributed under the MIT License. See `LICENSE` for details.
+
+---
+
+## 👤 Author
+
+**Abhishek**
+Final-year B.Tech CSE student · Full-stack (MERN) developer
+
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/abhishekyadav77)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/abhishek-yadav-mzp)
+
+<div align="center">
+
+⭐ **If this project helped you, consider giving it a star.**
+
+</div>
