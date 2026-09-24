@@ -244,20 +244,9 @@ npm run dev              # http://localhost:5173
 
 ---
 
-## 📸 Screenshots
 
 
-| Storefront | Medicine Detail |
-|---|---|
-| ![Storefront](screenshots/home.png) | ![Detail](screenshots/detail.png) |
-
-| Cart & Checkout | Admin Dashboard |
-|---|---|
-| ![Cart](screenshots/cart.png) | ![Admin](screenshots/admin.png) |
-
----
-
-## 🗺️ Roadmap
+## 🗺️ Roadmap for future
 
 - [ ] Razorpay / Stripe payment gateway integration
 - [ ] Cloudinary-backed prescription storage (replacing base64)
@@ -290,11 +279,11 @@ Distributed under the MIT License. See `LICENSE` for details.
 
 ## 👤 Author
 
-**Abhishek**
+**Amod Kumar Dwivedi**
 Final-year B.Tech CSE student · Full-stack (MERN) developer
 
-[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/abhishekyadav77)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/abhishek-yadav-mzp)
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/aamoddwivedi)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/amod-kumar-dwivedi-4a6883295)
 
 <div align="center">
 
