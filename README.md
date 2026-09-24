@@ -186,7 +186,7 @@ Content-Type: application/json
 ### 1 · Clone
 
 ```bash
-git clone https://github.com/abhishekyadav77/MedKart-Pharmacy-Management-System.git
+git clone https://github.com/aamoddwivedi/MedKart-Pharmacy-Management-System.git
 cd MedKart-Pharmacy-Management-System
 ```
 
